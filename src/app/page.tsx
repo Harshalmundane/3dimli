@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import {
   Search,
   User,
@@ -14,8 +13,32 @@ import {
   Grid3X3,
 } from "lucide-react"
 
+// Define interfaces for component props
+interface DiscordIconProps {
+  className?: string
+}
+
+interface ButtonProps {
+  children: React.ReactNode
+  className?: string
+  variant?: "default" | "ghost"
+  size?: "default" | "lg" | "icon"
+  [key: string]: unknown
+}
+
+interface InputProps {
+  className?: string
+  [key: string]: unknown
+}
+
+interface FloatingIconProps {
+  icon: React.ComponentType<{ className?: string }>
+  className?: string
+  style?: React.CSSProperties
+}
+
 // Discord Icon Component
-const DiscordIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+const DiscordIcon = ({ className = "w-5 h-5" }: DiscordIconProps) => (
   <svg
     viewBox="0 0 24 24"
     fill="currentColor"
@@ -25,28 +48,8 @@ const DiscordIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 )
 
-// 3D Cube Icon Component
-const CubeIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2z"/>
-    <path d="M12 22v-6.5"/>
-    <path d="M12 15.5L4 11"/>
-    <path d="M12 15.5l8-4.5"/>
-    <path d="M4 6.5L12 11"/>
-    <path d="M20 6.5L12 11"/>
-  </svg>
-)
-
 // Button Component
-const Button = ({ children, className = "", variant = "default", size = "default", ...props }: any) => {
+const Button = ({ children, className = "", variant = "default", size = "default", ...props }: ButtonProps) => {
   const baseClasses = "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background"
   
   const variants = {
@@ -71,7 +74,7 @@ const Button = ({ children, className = "", variant = "default", size = "default
 }
 
 // Input Component
-const Input = ({ className = "", ...props }: any) => (
+const Input = ({ className = "", ...props }: InputProps) => (
   <input
     className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     {...props}
@@ -79,15 +82,7 @@ const Input = ({ className = "", ...props }: any) => (
 )
 
 // Floating icons
-const FloatingIcon = ({
-  icon: Icon,
-  className,
-  style,
-}: {
-  icon: React.ComponentType<any>
-  className?: string
-  style?: React.CSSProperties
-}) => (
+const FloatingIcon = ({ icon: Icon, className, style }: FloatingIconProps) => (
   <div
     className={`absolute w-20 h-20 bg-gray-800/40 backdrop-blur-sm rounded-full flex items-center justify-center border border-gray-600/30 ${className}`}
     style={style}
@@ -98,19 +93,19 @@ const FloatingIcon = ({
 
 // Animated text
 const AnimatedText = () => {
-  const texts = [
-    "Discover, Buy, and Sell\nDigital Products",
-    "Buy Once, Download Anytime, Keep Forever",
-  ]
-
   const [index, setIndex] = useState(0)
   const [displayText, setDisplayText] = useState("")
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const texts = useMemo(() => [
+    "Discover, Buy, and Sell\nDigital Products",
+    "Buy Once, Download Anytime, Keep Forever",
+  ], [])
+
   useEffect(() => {
-    let typingSpeed = 70
-    let deletingSpeed = 40
-    let pauseTime = 2000
+    const typingSpeed = 70
+    const deletingSpeed = 40
+    const pauseTime = 2000
 
     let timer: NodeJS.Timeout
 
@@ -151,7 +146,6 @@ const AnimatedText = () => {
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-
       {/* Floating Icons - Left Side */}
       <FloatingIcon
         icon={() => (
@@ -217,82 +211,71 @@ export default function Home() {
         style={{ bottom: "18%", right: "35%" }}
       />
       {/* Header */}
-<header className="flex items-center justify-between p-6 px-8 relative z-10 bg-[#171717]">
-  <div className="flex items-center space-x-10 flex-1">
-    <div className="flex items-center space-x-3">
-      {/* Logo with 3D cube icon and BETA/version to the right */}
-      <div className="flex items-center space-x-2">
-        <span className="text-5xl font-extrabold bg-gradient-to-b from-[#3b5bff] to-[#8a3cff] bg-clip-text text-transparent tracking-wide">
-          3dimli
-        </span>
-      </div>
-      <div className="flex flex-col items-start">
-        <span className="text-xs text-white font-medium">BETA</span>
-        <span className="text-xs text-white font-medium">1.0.1</span>
-      </div>
-    </div>
-
-    {/* nav grows to take extra space */}
-    <nav className="hidden lg:flex items-center space-x-8 flex-1">
-      <a
-        href="#"
-        className="text-white font-medium hover:text-cyan-400 transition-colors"
-      >
-        Home
-      </a>
-      <a
-        href="#"
-        className="text-gray-300 hover:text-white transition-colors"
-      >
-        Discover
-      </a>
-      <a
-        href="#"
-        className="text-gray-300 hover:text-white transition-colors"
-      >
-        Features
-      </a>
-      <a
-        href="#"
-        className="text-gray-300 hover:text-white transition-colors"
-      >
-        Pricing
-      </a>
-
-      {/* search bar expands */}
-      <div className="relative flex-1 max-w-xl mr-8">
-        <Input
-          placeholder="Search..."
-          className="w-full bg-gray-800/60 border-gray-600/50 text-white placeholder-gray-400 pr-10 h-10 focus:border-cyan-400/50 focus:ring-cyan-400/20"
-        />
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-      </div>
-    </nav>
-  </div>
-
-  {/* buttons stay pinned to the right */}
-  <div className="flex items-center space-x-4">
-    <Button className="ml-1 bg-gradient-to-r from-[#0d1b4d] to-[#0a3d91] hover:from-[#0f255c] hover:to-[#0c4aa6] text-white px-6 h-11 rounded-xl shadow-md transition-all duration-200 flex items-center">
-      <DiscordIcon className="w-5 h-5 text-white" />
-      <span className="ml-2">Discord</span>
-    </Button>
-
-    <Button className="bg-gradient-to-r from-[#0d1b4d] to-[#0a3d91] hover:from-[#0f255c] hover:to-[#0c4aa6] text-white px-6 h-11 rounded-xl shadow-md transition-all duration-200 flex items-center">
-      <Download className="w-4 h-4 text-white" />
-      <span className="ml-2">Upload</span>
-    </Button>
-
-    <Button
-      variant="ghost"
-      size="icon"
-      className="text-white hover:bg-gray-800 hover:text-cyan-400 w-10 h-10 transition-all duration-200"
-    >
-      <User className="w-5 h-5" />
-    </Button>
-  </div>
-</header>
-
-
+      <header className="flex items-center justify-between p-6 px-8 relative z-10 bg-[#171717]">
+        <div className="flex items-center space-x-10 flex-1">
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-5xl font-extrabold bg-gradient-to-b from-[#3b5bff] to-[#8a3cff] bg-clip-text text-transparent tracking-wide">
+                3dimli
+              </span>
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="text-xs text-white font-medium">BETA</span>
+              <span className="text-xs text-white font-medium">1.0.1</span>
+            </div>
+          </div>
+          <nav className="hidden lg:flex items-center space-x-8 flex-1">
+            <a
+              href="#"
+              className="text-white font-medium hover:text-cyan-400 transition-colors"
+            >
+              Home
+            </a>
+            <a
+              href="#"
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              Discover
+            </a>
+            <a
+              href="#"
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#"
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              Pricing
+            </a>
+            <div className="relative flex-1 max-w-xl mr-8">
+              <Input
+                placeholder="Search..."
+                className="w-full bg-gray-800/60 border-gray-600/50 text-white placeholder-gray-400 pr-10 h-10 focus:border-cyan-400/50 focus:ring-cyan-400/20"
+              />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            </div>
+          </nav>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Button className="ml-1 bg-gradient-to-r from-[#0d1b4d] to-[#0a3d91] hover:from-[#0f255c] hover:to-[#0c4aa6] text-white px-6 h-11 rounded-xl shadow-md transition-all duration-200 flex items-center">
+            <DiscordIcon className="w-5 h-5 text-white" />
+            <span className="ml-2">Discord</span>
+          </Button>
+          <Button className="bg-gradient-to-r from-[#0d1b4d] to-[#0a3d91] hover:from-[#0f255c] hover:to-[#0c4aa6] text-white px-6 h-11 rounded-xl shadow-md transition-all duration-200 flex items-center">
+            <Download className="w-4 h-4 text-white" />
+            <span className="ml-2">Upload</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-gray-800 hover:text-cyan-400 w-10 h-10 transition-all duration-200"
+          >
+            <User className="w-5 h-5" />
+          </Button>
+        </div>
+      </header>
       {/* Main Content */}
       <main className="flex flex-col items-center justify-center min-h-[75vh] px-8 relative z-10">
         <div className="text-center max-w-6xl mx-auto">
