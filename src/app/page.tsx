@@ -1,122 +1,322 @@
-import React from 'react';
-import { Search, Upload, User, ShoppingCart, Download, Heart, Star, Headphones, Grid3x3, Tag, Users } from 'lucide-react';
 
-export default function LandingPage() {
-  const floatingIcons = [
-    { icon: Grid3x3, position: { top: '15%', left: '8%' }, color: 'from-purple-500 to-blue-500', delay: 0 },
-    { icon: ShoppingCart, position: { top: '20%', right: '8%' }, color: 'from-green-500 to-teal-500', delay: 0.5 },
-    { icon: Tag, position: { top: '35%', left: '12%' }, color: 'from-orange-500 to-red-500', delay: 1 },
-    { icon: Users, position: { bottom: '35%', left: '6%' }, color: 'from-pink-500 to-purple-500', delay: 1.5 },
-    { icon: Download, position: { bottom: '25%', left: '15%' }, color: 'from-blue-500 to-cyan-500', delay: 2 },
-    { icon: Heart, position: { bottom: '20%', left: '8%' }, color: 'from-red-500 to-pink-500', delay: 2.5 },
-    { icon: Star, position: { bottom: '30%', right: '35%' }, color: 'from-yellow-500 to-orange-500', delay: 3 },
-    { icon: Headphones, position: { bottom: '35%', right: '25%' }, color: 'from-indigo-500 to-purple-500', delay: 3.5 },
-    { icon: Search, position: { top: '45%', right: '12%' }, color: 'from-cyan-500 to-blue-500', delay: 4 },
-    { icon: Upload, position: { bottom: '20%', right: '8%' }, color: 'from-teal-500 to-green-500', delay: 4.5 },
-    { icon: Grid3x3, position: { bottom: '15%', right: '18%' }, color: 'from-purple-500 to-pink-500', delay: 5 }
-  ];
+"use client"
+
+import { useState, useEffect } from "react"
+import {
+  Search,
+  User,
+  Upload,
+  ShoppingCart,
+  Download,
+  Heart,
+  Star,
+  Headphones,
+  Grid3X3,
+} from "lucide-react"
+
+// Discord Icon Component
+const DiscordIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+  >
+    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+  </svg>
+)
+
+// 3D Cube Icon Component
+const CubeIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M12 2l8 4.5v11L12 22l-8-4.5v-11L12 2z"/>
+    <path d="M12 22v-6.5"/>
+    <path d="M12 15.5L4 11"/>
+    <path d="M12 15.5l8-4.5"/>
+    <path d="M4 6.5L12 11"/>
+    <path d="M20 6.5L12 11"/>
+  </svg>
+)
+
+// Button Component
+const Button = ({ children, className = "", variant = "default", size = "default", ...props }: any) => {
+  const baseClasses = "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background"
+  
+  const variants = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    ghost: "hover:bg-accent hover:text-accent-foreground",
+  }
+  
+  const sizes = {
+    default: "h-10 py-2 px-4",
+    lg: "h-11 px-8 rounded-md",
+    icon: "h-10 w-10",
+  }
+  
+  return (
+    <button
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
+// Input Component
+const Input = ({ className = "", ...props }: any) => (
+  <input
+    className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    {...props}
+  />
+)
+
+// Floating icons
+const FloatingIcon = ({
+  icon: Icon,
+  className,
+  style,
+}: {
+  icon: React.ComponentType<any>
+  className?: string
+  style?: React.CSSProperties
+}) => (
+  <div
+    className={`absolute w-20 h-20 bg-gray-800/40 backdrop-blur-sm rounded-full flex items-center justify-center border border-gray-600/30 ${className}`}
+    style={style}
+  >
+    <Icon className="w-7 h-7 text-gray-300" />
+  </div>
+)
+
+// Animated text
+const AnimatedText = () => {
+  const texts = [
+    "Discover, Buy, and Sell\nDigital Products",
+    "Buy Once, Download Anytime, Keep Forever",
+  ]
+
+  const [index, setIndex] = useState(0)
+  const [displayText, setDisplayText] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    let typingSpeed = 70
+    let deletingSpeed = 40
+    let pauseTime = 2000
+
+    let timer: NodeJS.Timeout
+
+    const currentText = texts[index]
+
+    if (!isDeleting && displayText.length < currentText.length) {
+      timer = setTimeout(() => {
+        setDisplayText(currentText.slice(0, displayText.length + 1))
+      }, typingSpeed)
+    } else if (isDeleting && displayText.length > 0) {
+      timer = setTimeout(() => {
+        setDisplayText(currentText.slice(0, displayText.length - 1))
+      }, deletingSpeed)
+    } else if (!isDeleting && displayText.length === currentText.length) {
+      timer = setTimeout(() => setIsDeleting(true), pauseTime)
+    } else if (isDeleting && displayText.length === 0) {
+      setIsDeleting(false)
+      setIndex((prev) => (prev + 1) % texts.length)
+    }
+
+    return () => clearTimeout(timer)
+  }, [displayText, isDeleting, index, texts])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden relative">
-      {/* Animated floating icons */}
-      {floatingIcons.map((item, index) => (
-        <div
-          key={index}
-          className="absolute w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br opacity-20 flex items-center justify-center animate-pulse"
-          style={{
-            ...item.position,
-            animationDelay: `${item.delay}s`,
-            animationDuration: `${3 + Math.random() * 2}s`
-          }}
-        >
-          <div className={`w-full h-full rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center backdrop-blur-sm border border-white/10`}>
-            <item.icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
-          </div>
-        </div>
+    <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white text-center leading-tight mb-8">
+      {displayText.split("\n").map((line, i) => (
+        <span key={i}>
+          {line}
+          {i < displayText.split("\n").length - 1 && <br />}
+        </span>
       ))}
+      <span className="inline-block animate-pulse">|</span>
+    </h1>
+  )
+}
 
-      {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600 rounded-full opacity-10 blur-3xl"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600 rounded-full opacity-10 blur-3xl"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-600/5 to-blue-600/5 rounded-full blur-3xl"></div>
+// Home page
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
 
+      {/* Floating Icons - Left Side */}
+      <FloatingIcon
+        icon={() => (
+          <div className="w-7 h-7 flex items-center justify-center">
+            <div className="w-6 h-6 bg-purple-500 rounded flex items-center justify-center">
+              <User className="w-4 h-4 text-white" />
+            </div>
+          </div>
+        )}
+        style={{ top: "15%", left: "6%" }}
+      />
+      <FloatingIcon
+        icon={() => (
+          <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+            %
+          </div>
+        )}
+        style={{ top: "35%", left: "4%" }}
+      />
+      <FloatingIcon
+        icon={() => (
+          <div className="w-7 h-7 bg-green-500 rounded flex items-center justify-center">
+            <Download className="w-4 h-4 text-white" />
+          </div>
+        )}
+        style={{ top: "60%", left: "8%" }}
+      />
+      <FloatingIcon
+        icon={() => (
+          <div className="w-7 h-7 bg-red-500 rounded-full flex items-center justify-center">
+            <Heart className="w-4 h-4 text-white fill-white" />
+          </div>
+        )}
+        style={{ bottom: "25%", left: "5%" }}
+      />
+      {/* Floating Icons - Right Side */}
+      <FloatingIcon icon={ShoppingCart} style={{ top: "18%", right: "6%" }} />
+      <FloatingIcon icon={Search} style={{ top: "40%", right: "4%" }} />
+      <FloatingIcon icon={Upload} style={{ bottom: "35%", right: "7%" }} />
+      <FloatingIcon
+        icon={() => (
+          <div className="w-7 h-7 bg-orange-500 rounded flex items-center justify-center">
+            <Grid3X3 className="w-4 h-4 text-white" />
+          </div>
+        )}
+        style={{ bottom: "15%", right: "3%" }}
+      />
+      {/* Bottom Icons */}
+      <FloatingIcon
+        icon={() => (
+          <div className="w-7 h-7 bg-yellow-500 rounded-full flex items-center justify-center">
+            <Star className="w-4 h-4 text-white fill-white" />
+          </div>
+        )}
+        style={{ bottom: "12%", left: "25%" }}
+      />
+      <FloatingIcon
+        icon={() => (
+          <div className="w-7 h-7 bg-blue-400 rounded-full flex items-center justify-center">
+            <Headphones className="w-4 h-4 text-white" />
+          </div>
+        )}
+        style={{ bottom: "18%", right: "35%" }}
+      />
       {/* Header */}
-      <header className="relative z-10 px-6 py-4 md:px-8 lg:px-12">
-        <nav className="flex items-center justify-between max-w-7xl mx-auto">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-              <div className="w-4 h-4 bg-white rounded-sm"></div>
-            </div>
-            <span className="text-2xl font-bold text-white">3dimli</span>
-            <span className="text-xs bg-purple-600 text-white px-2 py-1 rounded-full">BETA</span>
-            <span className="text-xs bg-gray-600 text-white px-2 py-1 rounded-full">1.0.1</span>
-          </div>
+<header className="flex items-center justify-between p-6 px-8 relative z-10 bg-[#171717]">
+  <div className="flex items-center space-x-10 flex-1">
+    <div className="flex items-center space-x-3">
+      {/* Logo with 3D cube icon and BETA/version to the right */}
+      <div className="flex items-center space-x-2">
+        <span className="text-5xl font-extrabold bg-gradient-to-b from-[#3b5bff] to-[#8a3cff] bg-clip-text text-transparent tracking-wide">
+          3dimli
+        </span>
+      </div>
+      <div className="flex flex-col items-start">
+        <span className="text-xs text-white font-medium">BETA</span>
+        <span className="text-xs text-white font-medium">1.0.1</span>
+      </div>
+    </div>
 
-          {/* Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-white hover:text-purple-400 transition-colors">Home</a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Discover</a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Features</a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
-          </div>
+    {/* nav grows to take extra space */}
+    <nav className="hidden lg:flex items-center space-x-8 flex-1">
+      <a
+        href="#"
+        className="text-white font-medium hover:text-cyan-400 transition-colors"
+      >
+        Home
+      </a>
+      <a
+        href="#"
+        className="text-gray-300 hover:text-white transition-colors"
+      >
+        Discover
+      </a>
+      <a
+        href="#"
+        className="text-gray-300 hover:text-white transition-colors"
+      >
+        Features
+      </a>
+      <a
+        href="#"
+        className="text-gray-300 hover:text-white transition-colors"
+      >
+        Pricing
+      </a>
 
-          {/* Search and Actions */}
-          <div className="flex items-center space-x-4">
-            <div className="hidden md:flex items-center bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg px-4 py-2">
-              <Search className="w-4 h-4 text-gray-400 mr-3" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="bg-transparent text-white placeholder-gray-400 focus:outline-none w-40"
-              />
-            </div>
-            
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-              <span className="text-sm">Discord</span>
-            </button>
-            
-            <button className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-              <Upload className="w-4 h-4" />
-              <span className="hidden md:inline text-sm">Upload</span>
-            </button>
-            
-            <button className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors">
-              <User className="w-5 h-5 text-white" />
-            </button>
-          </div>
-        </nav>
-      </header>
+      {/* search bar expands */}
+      <div className="relative flex-1 max-w-xl mr-8">
+        <Input
+          placeholder="Search..."
+          className="w-full bg-gray-800/60 border-gray-600/50 text-white placeholder-gray-400 pr-10 h-10 focus:border-cyan-400/50 focus:ring-cyan-400/20"
+        />
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+      </div>
+    </nav>
+  </div>
+
+  {/* buttons stay pinned to the right */}
+  <div className="flex items-center space-x-4">
+    <Button className="ml-1 bg-gradient-to-r from-[#0d1b4d] to-[#0a3d91] hover:from-[#0f255c] hover:to-[#0c4aa6] text-white px-6 h-11 rounded-xl shadow-md transition-all duration-200 flex items-center">
+      <DiscordIcon className="w-5 h-5 text-white" />
+      <span className="ml-2">Discord</span>
+    </Button>
+
+    <Button className="bg-gradient-to-r from-[#0d1b4d] to-[#0a3d91] hover:from-[#0f255c] hover:to-[#0c4aa6] text-white px-6 h-11 rounded-xl shadow-md transition-all duration-200 flex items-center">
+      <Download className="w-4 h-4 text-white" />
+      <span className="ml-2">Upload</span>
+    </Button>
+
+    <Button
+      variant="ghost"
+      size="icon"
+      className="text-white hover:bg-gray-800 hover:text-cyan-400 w-10 h-10 transition-all duration-200"
+    >
+      <User className="w-5 h-5" />
+    </Button>
+  </div>
+</header>
+
 
       {/* Main Content */}
-      <main className="relative z-10 flex-1 flex items-center justify-center px-6 py-12 md:py-20">
-        <div className="text-center max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight">
-            <span className="block">Instant Payouts,</span>
-            <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-              Full Control, No Limits
-            </span>
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-300 mb-4 max-w-2xl mx-auto leading-relaxed">
-            Your one-stop digital platform for 3D models and digital creations.
-          </p>
-          
-          <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-            Join our community of creators and collectors today.
-          </p>
-
-          <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
-            Explore all products
-          </button>
+      <main className="flex flex-col items-center justify-center min-h-[75vh] px-8 relative z-10">
+        <div className="text-center max-w-6xl mx-auto">
+          <AnimatedText />
+          <div className="space-y-4 mb-12">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Your one-stop digital platform for{" "}
+              <span className="">3D models</span> and digital
+              creations.
+            </p>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              Join our community of creators and collectors today.
+            </p>
+          </div>
+          <div className="mt-8">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-cyan-500/20 to-blue-600/20 hover:from-cyan-500/30 hover:to-blue-600/30 text-white px-10 py-4 text-lg backdrop-blur-sm border border-cyan-400/30 rounded-full font-medium transition-all duration-200 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-400/20"
+            >
+              Explore all products
+            </Button>
+          </div>
         </div>
       </main>
-
-      {/* Additional floating elements for more dynamic feel */}
-      <div className="absolute top-10 left-10 w-2 h-2 bg-purple-400 rounded-full animate-ping"></div>
-      <div className="absolute bottom-20 right-20 w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-      <div className="absolute top-1/3 right-10 w-1 h-1 bg-pink-400 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
-      <div className="absolute bottom-1/3 left-20 w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
     </div>
-  );
+  )
 }
